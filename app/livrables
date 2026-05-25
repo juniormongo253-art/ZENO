@@ -1,0 +1,371 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Plus,
+  X,
+  Upload,
+  Search,
+  Package,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  Calendar,
+  Eye,
+  Download,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+type Livrable = {
+  id: string;
+  projet: string;
+  nom: string;
+  type: "Document" | "Code" | "Design" | "Rapport";
+  dateLivraison: string;
+  statut: "Livré" | "En cours" | "En retard";
+  progression: number;
+  taille: string;
+};
+
+export default function LivrablesPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  // Données de démonstration
+  const livrablesList: Livrable[] = [
+    {
+      id: "1",
+      projet: "Site E-commerce",
+      nom: "Maquettes finales",
+      type: "Design",
+      dateLivraison: "15/01/2024",
+      statut: "Livré",
+      progression: 100,
+      taille: "15.2 MB",
+    },
+    {
+      id: "2",
+      projet: "Application Mobile",
+      nom: "Code source v1.0",
+      type: "Code",
+      dateLivraison: "20/01/2024",
+      statut: "En cours",
+      progression: 75,
+      taille: "245 MB",
+    },
+    {
+      id: "3",
+      projet: "Analyse marché",
+      nom: "Rapport final",
+      type: "Rapport",
+      dateLivraison: "10/01/2024",
+      statut: "En retard",
+      progression: 90,
+      taille: "8.5 MB",
+    },
+    {
+      id: "4",
+      projet: "Refonte logo",
+      nom: "Fichiers vectoriels",
+      type: "Design",
+      dateLivraison: "25/01/2024",
+      statut: "En cours",
+      progression: 50,
+      taille: "3.2 MB",
+    },
+    {
+      id: "5",
+      projet: "API Backend",
+      nom: "Documentation technique",
+      type: "Document",
+      dateLivraison: "30/01/2024",
+      statut: "En cours",
+      progression: 30,
+      taille: "12.8 MB",
+    },
+  ];
+
+  const filteredLivrables = livrablesList.filter(
+    (livrable) =>
+      livrable.projet.toLowerCase().includes(search.toLowerCase()) ||
+      livrable.nom.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const typeColors = {
+    Document:
+      "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+    Code: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400",
+    Design:
+      "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+    Rapport:
+      "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+  };
+
+  const statutIcons = {
+    Livré: <CheckCircle className="w-4 h-4 text-emerald-500" />,
+    "En cours": <Clock className="w-4 h-4 text-blue-500" />,
+    "En retard": <AlertCircle className="w-4 h-4 text-red-500" />,
+  };
+
+  const getProgressionColor = (progression: number) => {
+    if (progression >= 80) return "bg-emerald-500";
+    if (progression >= 50) return "bg-blue-500";
+    if (progression >= 30) return "bg-amber-500";
+    return "bg-red-500";
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* En-tête */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Livrables</h1>
+          <p className="text-muted-foreground">
+            Suivez les livrables de vos projets
+          </p>
+        </div>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center justify-center px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors text-sm"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Nouveau livrable
+        </button>
+      </div>
+
+      {/* Statistiques */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total</p>
+                <p className="text-2xl font-bold">{livrablesList.length}</p>
+              </div>
+              <Package className="w-6 h-6 text-muted-foreground" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Livrés</p>
+                <p className="text-2xl font-bold text-emerald-600">
+                  {livrablesList.filter((l) => l.statut === "Livré").length}
+                </p>
+              </div>
+              <CheckCircle className="w-6 h-6 text-emerald-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">En cours</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {livrablesList.filter((l) => l.statut === "En cours").length}
+                </p>
+              </div>
+              <Clock className="w-6 h-6 text-blue-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">En retard</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {livrablesList.filter((l) => l.statut === "En retard").length}
+                </p>
+              </div>
+              <AlertCircle className="w-6 h-6 text-red-500" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Barre de recherche */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              placeholder="Rechercher un livrable..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-10 rounded-lg border border-input bg-background px-10 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Liste des livrables */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {filteredLivrables.map((livrable) => (
+          <Card key={livrable.id} className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-lg">{livrable.nom}</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {livrable.projet}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${typeColors[livrable.type]}`}
+                  >
+                    {livrable.type}
+                  </span>
+                  {statutIcons[livrable.statut]}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-muted-foreground">Progression</span>
+                    <span className="font-medium">{livrable.progression}%</span>
+                  </div>
+                  <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
+                    <div
+                      className={`h-full w-full flex-1 transition-all ${getProgressionColor(livrable.progression)}`}
+                      style={{
+                        transform: `translateX(-${100 - livrable.progression}%)`,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span>Livraison: {livrable.dateLivraison}</span>
+                  </div>
+                  <div className="text-muted-foreground">{livrable.taille}</div>
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <button className="flex-1 flex items-center justify-center h-9 border border-input bg-background hover:bg-accent rounded-md text-sm font-medium px-3">
+                    <Eye className="w-4 h-4 mr-2" />
+                    Prévisualiser
+                  </button>
+                  <button className="flex-1 flex items-center justify-center h-9 border border-input bg-background hover:bg-accent rounded-md text-sm font-medium px-3">
+                    <Download className="w-4 h-4 mr-2" />
+                    Télécharger
+                  </button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Modal d'ajout */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-background rounded-xl shadow-lg max-w-md w-full">
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-xl font-semibold">Nouveau livrable</h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="h-10 w-10 rounded-full hover:bg-accent flex items-center justify-center"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Projet associé</label>
+                <select className="w-full h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                  <option value="">Sélectionnez un projet</option>
+                  <option value="site-ecommerce">Site E-commerce</option>
+                  <option value="app-mobile">Application Mobile</option>
+                  <option value="analyse-marche">Analyse marché</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Nom du livrable</label>
+                <input
+                  placeholder="Ex: Maquettes finales"
+                  className="w-full h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Type</label>
+                  <select className="w-full h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                    <option value="Document">Document</option>
+                    <option value="Code">Code</option>
+                    <option value="Design">Design</option>
+                    <option value="Rapport">Rapport</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    Date de livraison
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Fichiers</label>
+                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                  <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground mb-1">
+                    Glissez-déposez les fichiers
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    PDF, ZIP, images, etc.
+                  </p>
+                  <button className="h-9 border border-input bg-background hover:bg-accent rounded-md text-sm font-medium px-3">
+                    Choisir des fichiers
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Progression (%)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  placeholder="0"
+                  className="w-full h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 p-6 border-t">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="flex-1 h-10 border border-input bg-background hover:bg-accent rounded-lg text-sm font-medium"
+              >
+                Annuler
+              </button>
+              <button className="flex-1 h-10 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-sm font-medium flex items-center justify-center">
+                <Package className="w-4 h-4 mr-2" />
+                Ajouter le livrable
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+ 
